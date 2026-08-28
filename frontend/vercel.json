@@ -3,8 +3,8 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://feaspro.vercel.app/api/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://feaspro.vercel.app/api/$1"
     },
     {
       "source": "/(.*)",

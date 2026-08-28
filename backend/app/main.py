@@ -36,6 +36,8 @@ app.add_middleware(
 
 # Root & Health check
 @app.get("/health", tags=["System"])
+@app.get("/api/health", tags=["System"])
+@app.get("/api/v1/health", tags=["System"])
 def health_check():
     return {
         "status": "healthy",
