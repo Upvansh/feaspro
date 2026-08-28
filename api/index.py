@@ -1,20 +1,20 @@
 import sys
 import os
 
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-backend_dir = os.path.join(root_dir, "backend")
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+backend_dir = os.path.join(base_dir, "backend")
 
-for p in [root_dir, backend_dir]:
+for p in [base_dir, backend_dir]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
 from backend.app.main import app  # noqa: E402
-from backend.app.core.database import SessionLocal, init_db  # noqa: E402
 
-# Ensure database tables are created on cold start
+# Ensure database tables exist
 try:
+    from backend.app.core.database import SessionLocal, init_db  # noqa: E402
     _db = SessionLocal()
     init_db(_db)
     _db.close()
 except Exception as _e:
-    print("Cold start database init notice:", _e)
+    print("Database init on cold start:", _e)
