@@ -11,6 +11,11 @@ for p in [root_dir, backend_dir]:
 
 try:
     from backend.app.main import app
+    try:
+        from mangum import Mangum
+        handler = Mangum(app, lifespan="off")
+    except Exception:
+        handler = app
 except Exception as e:
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
@@ -30,3 +35,4 @@ except Exception as e:
                 "cwd": os.getcwd(),
             }
         )
+    handler = app
