@@ -1,3 +1,4 @@
+import os
 import datetime
 from typing import Generator
 from sqlalchemy import create_engine
@@ -6,12 +7,17 @@ from backend.app.core.config import settings
 from backend.app.models.base import Base
 
 # Database engine configuration - compatible with SQLite and PostgreSQL
+db_url = settings.DATABASE_URL
+# On Vercel serverless functions, SQLite must always use the writable /tmp directory
+if os.getenv("VERCEL") and db_url.startswith("sqlite"):
+    db_url = "sqlite:////tmp/feaspro.db"
+
 connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
 
 engine = create_engine(
-    settings.DATABASE_URL,
+    db_url,
     connect_args=connect_args,
     pool_pre_ping=True
 )
