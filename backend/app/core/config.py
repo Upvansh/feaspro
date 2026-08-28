@@ -13,10 +13,13 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     
     # Database URL: defaults to sqlite for local dev, PostgreSQL in production
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///./feaspro.db"
+    # On Vercel serverless, SQLite must reside in writable /tmp directory
+    DATABASE_URL: str = (
+        "sqlite:////tmp/feaspro.db"
+        if os.getenv("VERCEL") and (not os.getenv("DATABASE_URL") or os.getenv("DATABASE_URL", "").startswith("sqlite"))
+        else os.getenv("DATABASE_URL", "sqlite:///./feaspro.db")
     )
+
     
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = [
