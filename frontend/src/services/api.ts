@@ -24,6 +24,7 @@ import {
   ScheduleSummaryResponse,
   ScenarioComparisonResponse,
   FullFeasibilityResponse,
+  ExecutiveReportResponse,
 } from '../types';
 import { localBackend } from './localBackend';
 
@@ -611,6 +612,23 @@ export const api = {
     } catch {
       return payload;
     }
+  },
+
+  // Executive Feasibility Reporting (Phase 3)
+  async getExecutiveReport(projectId: string, scenarioId: string): Promise<ExecutiveReportResponse> {
+    try {
+      return await fetchJson<ExecutiveReportResponse>(
+        `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/report`
+      );
+    } catch {
+      return localBackend.getExecutiveReport(projectId, scenarioId);
+    }
+  },
+
+  getReportHtmlUrl(projectId: string, scenarioId: string): string {
+    const token = getToken();
+    const base = `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/report/html`;
+    return token ? `${base}?token=${encodeURIComponent(token)}` : base;
   },
 
   // Auth / User

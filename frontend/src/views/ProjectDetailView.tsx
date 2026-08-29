@@ -22,6 +22,7 @@ import { SalesWorkspace } from './SalesWorkspace';
 import { CashFlowWorkspace } from './CashFlowWorkspace';
 import { FundingWorkspace } from './FundingWorkspace';
 import { ScheduleWorkspace } from './ScheduleWorkspace';
+import { ReportsWorkspace } from './ReportsWorkspace';
 import { ScenarioComparisonMatrix } from '../components/ScenarioComparisonMatrix';
 import { ResidualLandValueCard } from '../components/ResidualLandValueCard';
 import { api } from '../services/api';
@@ -326,7 +327,16 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('reports')}
           >
             <span>Reports</span>
-            <span className="tab-badge-indicator">Phase 4</span>
+            <span
+              className="tab-badge-indicator"
+              style={{
+                backgroundColor: '#ecfdf5',
+                color: '#047857',
+                fontWeight: 600,
+              }}
+            >
+              Live
+            </span>
           </button>
         </div>
       </div>
@@ -717,16 +727,9 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
         )}
 
         {activeTab === 'reports' && (
-          <UpcomingModuleCard
-            moduleName="Feasibility Reporting & Export"
-            phase="Phase 4"
-            description="Generate bank-ready feasibility summary packs, detailed cost schedules, scenario comparisons, and Excel models."
-            features={[
-              'Bank-ready Executive Feasibility Summary PDF',
-              'Full multi-period cash flow export to Excel (.xlsx)',
-              'Side-by-side scenario comparison matrix',
-            ]}
-            iconName="reports"
+          <ReportsWorkspace
+            projectId={project.id}
+            scenario={activeScenario}
           />
         )}
       </div>

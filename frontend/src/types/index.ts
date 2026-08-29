@@ -482,3 +482,137 @@ export interface WaterfallResponse {
   waterfall: WaterfallResult;
   net_profit_after_finance: number | string;
 }
+
+// ─── Phase 3: Executive Feasibility Report Types ──────────────────────────────
+
+export interface ProjectMetaSummary {
+  project_id: string;
+  project_name: string;
+  organization_name: string;
+  organization_slug?: string;
+  location: string;
+  development_type: string;
+  status: string;
+  start_date?: string;
+  target_completion_date?: string;
+  scenario_id: string;
+  scenario_name: string;
+  is_baseline: boolean;
+  report_generated_at: string;
+  generated_by_user?: string;
+}
+
+export interface FinancialSummaryScorecard {
+  gross_realisation_value: number | string;
+  net_realisation_value: number | string;
+  land_acquisition_cost: number | string;
+  development_cost_ex_land: number | string;
+  total_project_cost: number | string;
+  total_finance_cost: number | string;
+  net_profit: number | string;
+  dev_margin_on_cost_pct: number | string;
+  margin_on_grv_pct: number | string;
+  return_on_equity_pct: number | string;
+  equity_multiple: number | string;
+  project_irr_pct: number;
+  net_present_value: number;
+  discount_rate_pct: number;
+  residual_land_value: number | string;
+  wacc_pct: number | string;
+}
+
+export interface CapitalStackSummary {
+  senior_debt_facility: number | string;
+  senior_max_ltc_pct: number | string;
+  senior_max_lvr_pct: number | string;
+  senior_interest_rate_pct: number | string;
+  senior_capitalized_interest: number | string;
+  senior_fees: number | string;
+  mezzanine_enabled: boolean;
+  mezzanine_facility: number | string;
+  mezzanine_interest_rate_pct: number | string;
+  mezzanine_capitalized_interest: number | string;
+  required_equity: number | string;
+  total_debt_facility: number | string;
+  peak_debt_exposure: number | string;
+  loan_to_cost_pct: number | string;
+  loan_to_value_pct: number | string;
+  equity_ratio_pct: number | string;
+}
+
+export interface CostCategoryBreakdownItem {
+  category: string;
+  display_name: string;
+  total_amount: number | string;
+  percentage_of_tdc: number | string;
+  item_count: number;
+  items: Array<{
+    name: string;
+    amount: number | string;
+    calculation_method?: string;
+    quantity?: number;
+    rate?: number;
+  }>;
+}
+
+export interface SalesProductMixItem {
+  id?: string;
+  name: string;
+  total_units: number;
+  avg_internal_area: number;
+  avg_external_area: number;
+  total_area_sqm: number;
+  price_per_sqm: number | string;
+  unit_sale_price: number | string;
+  total_revenue: number | string;
+  percentage_of_revenue: number | string;
+  sales_commission_pct: number | string;
+  marketing_cost_pct: number | string;
+  settlement_month: number;
+}
+
+export interface CashFlowSummaryRow {
+  month: number;
+  label: string;
+  land_costs: number | string;
+  construction_costs: number | string;
+  professional_fees: number | string;
+  statutory_costs: number | string;
+  finance_costs: number | string;
+  other_costs: number | string;
+  total_outflow: number | string;
+  sales_inflow: number | string;
+  net_cashflow: number | string;
+  cumulative_net_cashflow: number | string;
+  debt_drawdown: number | string;
+  debt_repayment: number | string;
+  closing_debt_balance: number | string;
+}
+
+export interface MilestoneSummaryItem {
+  id?: string;
+  name: string;
+  phase: string;
+  start_month: number;
+  end_month: number;
+  duration_months: number;
+  status: string;
+}
+
+export interface ExecutiveReportResponse {
+  project_meta: ProjectMetaSummary;
+  financial_kpis: FinancialSummaryScorecard;
+  capital_stack: CapitalStackSummary;
+  cost_breakdown: CostCategoryBreakdownItem[];
+  sales_mix: SalesProductMixItem[];
+  total_units: number;
+  total_gfa_sqm: number;
+  avg_price_per_sqm: number | string;
+  cashflow_summary: CashFlowSummaryRow[];
+  milestones: MilestoneSummaryItem[];
+  executive_summary_notes: string[];
+  stamp_duty_details: Record<string, unknown>;
+  gst_details: Record<string, unknown>;
+  valuation_rlv: Record<string, unknown>;
+}
+

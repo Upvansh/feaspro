@@ -1392,3 +1392,581 @@ body {
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Phase 3: Executive Feasibility Reporting & Print Stylesheets
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.reports-workspace-root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.report-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 20px;
+  box-shadow: var(--shadow-xs);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.report-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: #1e3a8a;
+  background-color: #eff6ff;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid #bfdbfe;
+}
+
+.pulse-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  animation: pulse-ring 1.8s infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.report-last-compiled {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.report-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Document Sheet */
+.executive-report-document {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Header Band */
+.report-header-band {
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 24px;
+}
+
+.report-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.report-confidential-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.report-org-signature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-org-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.report-doc-id {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.report-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.report-project-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.report-project-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.dot-divider {
+  color: #cbd5e1;
+}
+
+.scenario-name-badge {
+  color: #2563eb;
+  font-weight: 600;
+  background: #eff6ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #bfdbfe;
+}
+
+.report-meta-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+}
+
+.report-meta-item {
+  display: flex;
+  gap: 8px;
+}
+
+.meta-k {
+  color: #64748b;
+  min-width: 90px;
+}
+
+.meta-v {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* KPI Scorecard Grid */
+.report-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.report-kpi-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-kpi-card.highlight-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.report-kpi-card.highlight-brand {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.report-kpi-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+}
+
+.report-kpi-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: var(--font-mono);
+  line-height: 1.2;
+}
+
+.report-kpi-sub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #475569;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.badge-pill-light {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Sections */
+.report-section-card {
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 22px 24px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 12px;
+}
+
+.report-section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-section-title-wrap h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.2px;
+}
+
+.report-section-tag {
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Executive Notes */
+.report-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-note-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.5;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #059669;
+}
+
+/* Capital Stack Mini Cards */
+.capital-stack-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.capital-stack-mini-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+
+.cs-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.cs-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: var(--font-mono);
+  margin-bottom: 6px;
+}
+
+.cs-detail {
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.cs-sub-metric {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+/* Tables in Report */
+.report-table-wrap {
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.report-table th {
+  background: #f8fafc;
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #475569;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.report-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.report-table-total-row td {
+  background: #f8fafc;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  border-top: 2px solid #0f172a;
+  border-bottom: 2px solid #0f172a;
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+/* Milestone Cards */
+.milestone-grid-report {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.milestone-report-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.m-phase-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2563eb;
+  margin-bottom: 4px;
+}
+
+.m-name {
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.m-timing {
+  font-size: 0.78rem;
+  color: #64748b;
+  display: flex;
+  gap: 4px;
+}
+
+/* Sign-off Card */
+.report-signoff-card {
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  background: #f8fafc;
+  margin-top: 10px;
+}
+
+.signoff-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.signoff-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #475569;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.signoff-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.signoff-role {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+.signoff-org {
+  font-size: 0.84rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.signoff-date {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.signature-line-block {
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.sig-line {
+  border-bottom: 1.5px solid #0f172a;
+  height: 32px;
+  width: 100%;
+}
+
+.sig-caption {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.signoff-disclaimer {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PRINT STYLESHEET (@media print)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 10mm;
+  }
+
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide app navigation chrome */
+  .app-sidebar,
+  .app-header,
+  .report-toolbar,
+  .project-header,
+  .project-tabs-container,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  .app-container,
+  .app-main,
+  .main-content,
+  .view-container,
+  .reports-workspace-root {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .executive-report-document {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .print-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .report-section-card,
+  .report-kpi-card,
+  .capital-stack-mini-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .report-table tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+

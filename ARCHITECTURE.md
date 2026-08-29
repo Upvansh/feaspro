@@ -87,14 +87,15 @@ This document describes the Phase 1 foundational architecture, multi-tenant secu
   │   │       ├── auth.py      # Login and user verification
   │   │       ├── projects.py  # Project CRUD, filtering, soft-delete archive/restore
   │   │       ├── scenarios.py # Feasibility scenario management
+  │   │       ├── reports.py   # (Phase 3) Executive feasibility reporting & standalone HTML/PDF export
   │   │       └── router.py    # Combined v1 API router
   │   ├── calculations/        # Dedicated deterministic financial calculation engine
   │   │   ├── __init__.py
-  │   │   ├── revenue.py       # (Phase 2) GRV, net realization, sales phasing
-  │   │   ├── costs.py         # (Phase 2) Land acquisition, statutory fees, construction, contingency
-  │   │   ├── funding.py       # (Phase 3) Senior debt, mezzanine, equity waterfall, interest capitalization
-  │   │   ├── cashflow.py      # (Phase 3) S-curves, monthly cash flow phasing, peak debt
-  │   │   └── feasibility.py   # (Phase 2/3) Development margin, RoC, IRR, NPV
+  │   │   ├── revenue.py       # GRV, net realization, sales phasing
+  │   │   ├── costs.py         # Land acquisition, statutory fees, construction, contingency
+  │   │   ├── funding.py       # Senior debt, mezzanine, equity waterfall, interest capitalization
+  │   │   ├── cashflow.py      # S-curves, monthly cash flow phasing, peak debt
+  │   │   └── feasibility.py   # Development margin, RoC, IRR, NPV
   │   ├── core/
   │   │   ├── config.py        # Environment settings (Pydantic SettingsConfigDict)
   │   │   ├── database.py      # DB engine, session factory, startup demo seeder
