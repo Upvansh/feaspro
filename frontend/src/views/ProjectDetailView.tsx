@@ -14,7 +14,6 @@ import {
   Map,
 } from 'lucide-react';
 import { Project, Scenario, DevelopmentType, LandInput, ScenarioMetrics } from '../types';
-import { UpcomingModuleCard } from '../components/UpcomingModuleCard';
 import { CreateScenarioModal } from '../components/CreateScenarioModal';
 import { LandWorkspace } from './LandWorkspace';
 import { CostsWorkspace } from './CostsWorkspace';

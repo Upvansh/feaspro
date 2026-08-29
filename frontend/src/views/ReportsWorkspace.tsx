@@ -12,8 +12,6 @@ import {
   Calendar,
   ShieldCheck,
   Award,
-  Eye,
-  SlidersHorizontal,
 } from 'lucide-react';
 import { ExecutiveReportResponse, Scenario } from '../types';
 import { api } from '../services/api';

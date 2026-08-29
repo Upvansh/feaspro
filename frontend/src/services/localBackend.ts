@@ -419,8 +419,8 @@ export const localBackend = {
   },
 
   getExecutiveReport(projectId: string, scenarioId: string): ExecutiveReportResponse {
-    const projects = this.getProjects();
-    const proj = projects.find(p => p.id === projectId) || {
+    const projectList = this.getProjects();
+    const proj = projectList.items.find((p: ProjectListItem) => p.id === projectId) || {
       id: projectId,
       name: 'Pacific Horizon Residences',
       location: 'Burleigh Heads, QLD',
@@ -436,11 +436,11 @@ export const localBackend = {
         project_name: proj.name,
         organization_name: 'Apex Property Group',
         organization_slug: 'apex-property-group',
-        location: proj.location,
-        development_type: proj.development_type,
-        status: proj.status,
-        start_date: proj.start_date,
-        target_completion_date: proj.target_completion_date,
+        location: proj.location || 'Burleigh Heads, QLD',
+        development_type: proj.development_type || 'multi_residential',
+        status: proj.status || 'active',
+        start_date: proj.start_date ?? undefined,
+        target_completion_date: proj.target_completion_date ?? undefined,
         scenario_id: scenarioId,
         scenario_name: 'Baseline Feasibility (48 Units)',
         is_baseline: true,
