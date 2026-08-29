@@ -239,7 +239,7 @@ export const SensitivityWorkspace: React.FC<SensitivityWorkspaceProps> = ({ proj
           {/* Slider 3: Interest Rate Delta */}
           <div className="slider-box">
             <div className="slider-info">
-              <span className="slider-label">Interest Rate Shock</span>
+              <span className="slider-label">Interest Rate</span>
               <span className={`slider-val ${rateDelta > 0 ? 'text-red' : rateDelta < 0 ? 'text-green' : ''}`}>
                 {rateDelta > 0 ? `+${rateDelta.toFixed(1)}%` : `${rateDelta.toFixed(1)}%`} ({toNum(baseline_kpis.interest_rate_pct) + rateDelta}%)
               </span>
@@ -263,9 +263,9 @@ export const SensitivityWorkspace: React.FC<SensitivityWorkspaceProps> = ({ proj
           {/* Slider 4: Delay Months */}
           <div className="slider-box">
             <div className="slider-info">
-              <span className="slider-label">Construction Slippage</span>
+              <span className="slider-label">Timeline Slippage</span>
               <span className={`slider-val ${delayMonths > 0 ? 'text-red' : ''}`}>
-                +{delayMonths} Months ({baseline_kpis.duration_months + delayMonths} mo)
+                +{delayMonths} mo ({baseline_kpis.duration_months + delayMonths} mo)
               </span>
             </div>
             <input
