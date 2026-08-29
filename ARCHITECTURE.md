@@ -86,16 +86,18 @@ This document describes the Phase 1 foundational architecture, multi-tenant secu
   │   │   └── v1/
   │   │       ├── auth.py      # Login and user verification
   │   │       ├── projects.py  # Project CRUD, filtering, soft-delete archive/restore
-  │   │       ├── scenarios.py # Feasibility scenario management
-  │   │       ├── reports.py   # (Phase 3) Executive feasibility reporting & standalone HTML/PDF export
-  │   │       └── router.py    # Combined v1 API router
-  │   ├── calculations/        # Dedicated deterministic financial calculation engine
+  │   │       ├── scenarios.py   # Feasibility scenario management
+  │   │       ├── reports.py     # (Phase 3) Executive feasibility reporting & standalone HTML/PDF export
+  │   │       ├── sensitivity.py # (Phase 4) Sensitivity matrix, rate shocks, delay stress test & breakeven
+  │   │       └── router.py      # Combined v1 API router
+  │   ├── calculations/          # Dedicated deterministic financial calculation engine
   │   │   ├── __init__.py
-  │   │   ├── revenue.py       # GRV, net realization, sales phasing
-  │   │   ├── costs.py         # Land acquisition, statutory fees, construction, contingency
-  │   │   ├── funding.py       # Senior debt, mezzanine, equity waterfall, interest capitalization
-  │   │   ├── cashflow.py      # S-curves, monthly cash flow phasing, peak debt
-  │   │   └── feasibility.py   # Development margin, RoC, IRR, NPV
+  │   │   ├── revenue.py         # GRV, net realization, sales phasing
+  │   │   ├── costs.py           # Land acquisition, statutory fees, construction, contingency
+  │   │   ├── funding.py         # Senior debt, mezzanine, equity waterfall, interest capitalization
+  │   │   ├── cashflow.py        # S-curves, monthly cash flow phasing, peak debt
+  │   │   ├── feasibility.py     # Development margin, RoC, IRR, NPV
+  │   │   └── sensitivity.py     # (Phase 4) 2D heatmaps, interest rate shocks, timeline delays, breakeven, tornado
   │   ├── core/
   │   │   ├── config.py        # Environment settings (Pydantic SettingsConfigDict)
   │   │   ├── database.py      # DB engine, session factory, startup demo seeder

@@ -25,6 +25,9 @@ import {
   ScenarioComparisonResponse,
   FullFeasibilityResponse,
   ExecutiveReportResponse,
+  SensitivityDashboardResponse,
+  SensitivitySimulateInput,
+  SensitivitySimulateResponse,
 } from '../types';
 import { localBackend } from './localBackend';
 
@@ -629,6 +632,35 @@ export const api = {
     const token = getToken();
     const base = `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/report/html`;
     return token ? `${base}?token=${encodeURIComponent(token)}` : base;
+  },
+
+  // Sensitivity Analysis & Stress Testing (Phase 4)
+  async getSensitivityAnalysis(projectId: string, scenarioId: string): Promise<SensitivityDashboardResponse> {
+    try {
+      return await fetchJson<SensitivityDashboardResponse>(
+        `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/sensitivity`
+      );
+    } catch {
+      return localBackend.getSensitivityAnalysis(projectId, scenarioId);
+    }
+  },
+
+  async simulateSensitivity(
+    projectId: string,
+    scenarioId: string,
+    payload: SensitivitySimulateInput
+  ): Promise<SensitivitySimulateResponse> {
+    try {
+      return await fetchJson<SensitivitySimulateResponse>(
+        `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/sensitivity/simulate`,
+        {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        }
+      );
+    } catch {
+      return localBackend.simulateSensitivity(projectId, scenarioId, payload);
+    }
   },
 
   // Auth / User

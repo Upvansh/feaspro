@@ -10,6 +10,7 @@ from backend.app.api.v1.funding import router as funding_router
 from backend.app.api.v1.schedule import router as schedule_router
 from backend.app.api.v1.feasibility import router as feasibility_router
 from backend.app.api.v1.reports import router as reports_router
+from backend.app.api.v1.sensitivity import router as sensitivity_router
 
 api_router = APIRouter()
 
@@ -24,4 +25,6 @@ api_router.include_router(funding_router)
 api_router.include_router(schedule_router)
 api_router.include_router(feasibility_router)
 api_router.include_router(reports_router)
+api_router.include_router(sensitivity_router)
+
 

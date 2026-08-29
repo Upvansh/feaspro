@@ -16,6 +16,9 @@ import {
   ScheduleSummaryResponse,
   FullFeasibilityResponse,
   ExecutiveReportResponse,
+  SensitivityDashboardResponse,
+  SensitivitySimulateInput,
+  SensitivitySimulateResponse,
 } from '../types';
 
 const STORAGE_KEY_USER = 'feaspro_local_user';
@@ -626,6 +629,170 @@ export const localBackend = {
       gst_details: { gst_payable: 3820000, margin_scheme_applied: true },
       valuation_rlv: { residual_land_value_cost_target: 15200000, target_margin_on_cost_pct: 20.0 },
     };
+  },
+
+  getSensitivityAnalysis(_projectId: string, scenarioId: string): SensitivityDashboardResponse {
+    const pSteps = [-20, -15, -10, -5, 0, 5, 10, 15, 20];
+    const cSteps = [-20, -15, -10, -5, 0, 5, 10, 15, 20];
+    const baseGRV = 58400000;
+    const baseNRV = 55480000;
+    const baseCost = 45700000;
+
+    const rows = cSteps.map(cShift => {
+      const shiftedCost = baseCost * (1 + cShift / 100);
+      const cells = pSteps.map(pShift => {
+        const shiftedNRV = baseNRV * (1 + pShift / 100);
+        const shiftedGRV = baseGRV * (1 + pShift / 100);
+        const profit = shiftedNRV - shiftedCost;
+        const margin = (profit / shiftedCost) * 100;
+        const irr = Math.max(-10, Math.min(60, 23.6 + (pShift * 0.8) - (cShift * 0.6)));
+        const rlv = (shiftedNRV / 1.2) - (shiftedCost * 0.68);
+
+        let status: 'optimal' | 'acceptable' | 'marginal' | 'deficit' = 'marginal';
+        if (margin >= 20) status = 'optimal';
+        else if (margin >= 15) status = 'acceptable';
+        else if (margin >= 0) status = 'marginal';
+        else status = 'deficit';
+
+        return {
+          price_shift_pct: pShift,
+          cost_shift_pct: cShift,
+          gross_realisation_value: shiftedGRV,
+          net_realisation_value: shiftedNRV,
+          total_project_cost: shiftedCost,
+          net_profit: profit,
+          dev_margin_on_cost_pct: margin.toFixed(2),
+          margin_on_grv_pct: ((profit / shiftedGRV) * 100).toFixed(2),
+          project_irr_pct: parseFloat(irr.toFixed(1)),
+          residual_land_value: Math.max(0, rlv),
+          status,
+          is_baseline: pShift === 0 && cShift === 0,
+        };
+      });
+      return { cost_shift_pct: cShift, cells };
+    });
+
+    return {
+      scenario_id: scenarioId,
+      scenario_name: 'Baseline Feasibility (48 Units)',
+      is_baseline: true,
+      baseline_kpis: {
+        gross_realisation_value: baseGRV,
+        net_realisation_value: baseNRV,
+        total_project_cost: baseCost,
+        land_cost: 14500000,
+        construction_cost: 22400000,
+        finance_cost: 2850000,
+        net_profit: 9780000,
+        dev_margin_on_cost_pct: 21.4,
+        project_irr_pct: 23.6,
+        equity_amount: 13710000,
+        interest_rate_pct: 8.5,
+        duration_months: 24,
+      },
+      matrix_2d: {
+        price_steps: pSteps,
+        cost_steps: cSteps,
+        rows,
+      },
+      interest_rate_matrix: [
+        { rate_delta_pct: -3.0, interest_rate_pct: 5.5, total_finance_cost: 1840000, finance_cost_increase: -1010000, net_profit_after_finance: 10790000, dev_margin_on_cost_pct: 24.1, return_on_equity_pct: 78.7, is_baseline: false },
+        { rate_delta_pct: -2.0, interest_rate_pct: 6.5, total_finance_cost: 2170000, finance_cost_increase: -680000, net_profit_after_finance: 10460000, dev_margin_on_cost_pct: 23.2, return_on_equity_pct: 76.3, is_baseline: false },
+        { rate_delta_pct: -1.0, interest_rate_pct: 7.5, total_finance_cost: 2510000, finance_cost_increase: -340000, net_profit_after_finance: 10120000, dev_margin_on_cost_pct: 22.3, return_on_equity_pct: 73.8, is_baseline: false },
+        { rate_delta_pct: 0.0, interest_rate_pct: 8.5, total_finance_cost: 2850000, finance_cost_increase: 0, net_profit_after_finance: 9780000, dev_margin_on_cost_pct: 21.4, return_on_equity_pct: 71.4, is_baseline: true },
+        { rate_delta_pct: 1.0, interest_rate_pct: 9.5, total_finance_cost: 3190000, finance_cost_increase: 340000, net_profit_after_finance: 9440000, dev_margin_on_cost_pct: 20.5, return_on_equity_pct: 68.9, is_baseline: false },
+        { rate_delta_pct: 2.0, interest_rate_pct: 10.5, total_finance_cost: 3520000, finance_cost_increase: 670000, net_profit_after_finance: 9110000, dev_margin_on_cost_pct: 19.6, return_on_equity_pct: 66.4, is_baseline: false },
+        { rate_delta_pct: 3.0, interest_rate_pct: 11.5, total_finance_cost: 3860000, finance_cost_increase: 1010000, net_profit_after_finance: 8770000, dev_margin_on_cost_pct: 18.8, return_on_equity_pct: 64.0, is_baseline: false },
+        { rate_delta_pct: 4.0, interest_rate_pct: 12.5, total_finance_cost: 4190000, finance_cost_increase: 1340000, net_profit_after_finance: 8440000, dev_margin_on_cost_pct: 17.9, return_on_equity_pct: 61.6, is_baseline: false },
+      ],
+      delay_stress_test: [
+        { delay_months: 0, total_duration_months: 24, additional_holding_cost: 0, additional_interest_cost: 0, total_delay_cost: 0, adjusted_project_cost: baseCost, adjusted_net_profit: 9780000, dev_margin_on_cost_pct: 21.4, project_irr_pct: 23.6, is_baseline: true },
+        { delay_months: 1, total_duration_months: 25, additional_holding_cost: 25000, additional_interest_cost: 130000, total_delay_cost: 155000, adjusted_project_cost: 45855000, adjusted_net_profit: 9625000, dev_margin_on_cost_pct: 21.0, project_irr_pct: 22.3, is_baseline: false },
+        { delay_months: 3, total_duration_months: 27, additional_holding_cost: 75000, additional_interest_cost: 390000, total_delay_cost: 465000, adjusted_project_cost: 46165000, adjusted_net_profit: 9315000, dev_margin_on_cost_pct: 20.2, project_irr_pct: 19.8, is_baseline: false },
+        { delay_months: 6, total_duration_months: 30, additional_holding_cost: 150000, additional_interest_cost: 780000, total_delay_cost: 930000, adjusted_project_cost: 46630000, adjusted_net_profit: 8850000, dev_margin_on_cost_pct: 19.0, project_irr_pct: 16.4, is_baseline: false },
+        { delay_months: 9, total_duration_months: 33, additional_holding_cost: 225000, additional_interest_cost: 1170000, total_delay_cost: 1395000, adjusted_project_cost: 47095000, adjusted_net_profit: 8385000, dev_margin_on_cost_pct: 17.8, project_irr_pct: 13.5, is_baseline: false },
+        { delay_months: 12, total_duration_months: 36, additional_holding_cost: 300000, additional_interest_cost: 1560000, total_delay_cost: 1860000, adjusted_project_cost: 47560000, adjusted_net_profit: 7920000, dev_margin_on_cost_pct: 16.6, project_irr_pct: 11.0, is_baseline: false },
+      ],
+      breakeven: {
+        current_grv: baseGRV,
+        breakeven_grv: 48120000,
+        revenue_safety_buffer_dollar: 9780000,
+        revenue_safety_buffer_pct: 16.7,
+        current_rate_per_sqm: 10034.36,
+        breakeven_rate_per_sqm: 8268.04,
+        current_total_cost: baseCost,
+        max_tolerable_cost: baseNRV,
+        max_cost_overrun_dollar: 9780000,
+        max_cost_overrun_pct: 21.4,
+        current_land_cost: 14500000,
+        max_tolerable_land_price: 24280000,
+      },
+      tornado_ranking: [
+        { rank: 1, driver: 'Sales Realisation (GRV)', category: 'revenue', low_shock_profit: 4232000, high_shock_profit: 15328000, profit_swing: 11096000, elasticity_pct: 113.5 },
+        { rank: 2, driver: 'Direct Construction Costs', category: 'costs', low_shock_profit: 7540000, high_shock_profit: 12020000, profit_swing: 4480000, elasticity_pct: 45.8 },
+        { rank: 3, driver: 'Land Acquisition Purchase Price', category: 'land', low_shock_profit: 8330000, high_shock_profit: 11230000, profit_swing: 2900000, elasticity_pct: 29.7 },
+        { rank: 4, driver: 'Financing & Interest Rate', category: 'finance', low_shock_profit: 9352500, high_shock_profit: 10207500, profit_swing: 855000, elasticity_pct: 8.7 },
+        { rank: 5, driver: 'Project Timeline (Holding Costs)', category: 'schedule', low_shock_profit: 9710000, high_shock_profit: 9850000, profit_swing: 140000, elasticity_pct: 1.4 },
+      ],
+    };
+  },
+
+  simulateSensitivity(
+    _projectId: string,
+    _scenarioId: string,
+    payload: SensitivitySimulateInput
+  ): SensitivitySimulateResponse {
+    const baseGRV = 58400000;
+    const baseNRV = 55480000;
+    const baseCost = 45700000;
+    const baseFinance = 2850000;
+    const baseEquity = 13710000;
+
+    const pMult = 1 + payload.price_shift_pct / 100;
+    const cMult = 1 + payload.cost_shift_pct / 100;
+    const simGRV = baseGRV * pMult;
+    const simNRV = baseNRV * pMult;
+    const simBaseCost = baseCost * cMult;
+
+    const rateDelta = payload.interest_rate_delta_pct;
+    const rateRatio = (8.5 + rateDelta) / 8.5;
+    const extraDelay = payload.delay_months;
+    const delayFinanceMult = 1 + extraDelay * 0.045;
+    const simFinance = baseFinance * rateRatio * delayFinanceMult;
+    const extraHolding = 25000 * extraDelay;
+
+    const simTotalCost = simBaseCost + (simFinance - baseFinance) + extraHolding;
+    const simProfit = simNRV - simTotalCost;
+    const simMargin = (simProfit / simTotalCost) * 100;
+    const simROE = (simProfit / baseEquity) * 100;
+
+    const irrFactor = Math.pow(24 / (24 + extraDelay), 1.35);
+    const profitScale = simProfit / (baseNRV - baseCost);
+    const simIRR = Math.max(-50, Math.min(150, 23.6 * irrFactor * (0.3 + 0.7 * Math.max(-0.5, profitScale))));
+
+    let status: 'optimal' | 'acceptable' | 'marginal' | 'deficit' = 'marginal';
+    if (simMargin >= 20) status = 'optimal';
+    else if (simMargin >= 15) status = 'acceptable';
+    else if (simMargin >= 0) status = 'marginal';
+    else status = 'deficit';
+
+    return {
+      price_shift_pct: payload.price_shift_pct,
+      cost_shift_pct: payload.cost_shift_pct,
+      interest_rate_delta_pct: payload.interest_rate_delta_pct,
+      delay_months: payload.delay_months,
+      simulated_grv: simGRV,
+      simulated_nrv: simNRV,
+      simulated_total_cost: simTotalCost,
+      simulated_finance_cost: simFinance,
+      simulated_net_profit: simProfit,
+      simulated_margin_on_cost_pct: simMargin.toFixed(2),
+      simulated_project_irr_pct: parseFloat(simIRR.toFixed(1)),
+      simulated_return_on_equity_pct: simROE.toFixed(2),
+      simulated_residual_land_value: Math.max(0, (simNRV / 1.2) - (simTotalCost * 0.68)),
+      status,
+    };
   }
 };
+
 

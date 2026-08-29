@@ -22,6 +22,7 @@ import { CashFlowWorkspace } from './CashFlowWorkspace';
 import { FundingWorkspace } from './FundingWorkspace';
 import { ScheduleWorkspace } from './ScheduleWorkspace';
 import { ReportsWorkspace } from './ReportsWorkspace';
+import { SensitivityWorkspace } from './SensitivityWorkspace';
 import { ScenarioComparisonMatrix } from '../components/ScenarioComparisonMatrix';
 import { ResidualLandValueCard } from '../components/ResidualLandValueCard';
 import { api } from '../services/api';
@@ -43,7 +44,8 @@ type TabType =
   | 'schedule'
   | 'cashflow'
   | 'scenarios'
-  | 'reports';
+  | 'reports'
+  | 'sensitivity';
 
 const formatDevType = (type: DevelopmentType): string => {
   const map: Record<DevelopmentType, string> = {
@@ -326,6 +328,23 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('reports')}
           >
             <span>Reports</span>
+            <span
+              className="tab-badge-indicator"
+              style={{
+                backgroundColor: '#ecfdf5',
+                color: '#047857',
+                fontWeight: 600,
+              }}
+            >
+              Live
+            </span>
+          </button>
+
+          <button
+            className={`tab-btn ${activeTab === 'sensitivity' ? 'active' : ''}`}
+            onClick={() => setActiveTab('sensitivity')}
+          >
+            <span>Sensitivity</span>
             <span
               className="tab-badge-indicator"
               style={{
@@ -727,6 +746,13 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
 
         {activeTab === 'reports' && (
           <ReportsWorkspace
+            projectId={project.id}
+            scenario={activeScenario}
+          />
+        )}
+
+        {activeTab === 'sensitivity' && (
+          <SensitivityWorkspace
             projectId={project.id}
             scenario={activeScenario}
           />

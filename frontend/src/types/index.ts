@@ -616,3 +616,132 @@ export interface ExecutiveReportResponse {
   valuation_rlv: Record<string, unknown>;
 }
 
+// ─── Phase 4: Sensitivity Analysis & Stress Testing Types ──────────────────────
+
+export interface SensitivityMatrixCell {
+  price_shift_pct: number;
+  cost_shift_pct: number;
+  gross_realisation_value: number | string;
+  net_realisation_value: number | string;
+  total_project_cost: number | string;
+  net_profit: number | string;
+  dev_margin_on_cost_pct: number | string;
+  margin_on_grv_pct: number | string;
+  project_irr_pct: number;
+  residual_land_value: number | string;
+  status: 'optimal' | 'acceptable' | 'marginal' | 'deficit';
+  is_baseline: boolean;
+}
+
+export interface SensitivityMatrixRow {
+  cost_shift_pct: number;
+  cells: SensitivityMatrixCell[];
+}
+
+export interface Sensitivity2DMatrix {
+  price_steps: number[];
+  cost_steps: number[];
+  rows: SensitivityMatrixRow[];
+}
+
+export interface InterestRateSensitivityRow {
+  rate_delta_pct: number;
+  interest_rate_pct: number | string;
+  total_finance_cost: number | string;
+  finance_cost_increase: number | string;
+  net_profit_after_finance: number | string;
+  dev_margin_on_cost_pct: number | string;
+  return_on_equity_pct: number | string;
+  is_baseline: boolean;
+}
+
+export interface DelayStressTestRow {
+  delay_months: number;
+  total_duration_months: number;
+  additional_holding_cost: number | string;
+  additional_interest_cost: number | string;
+  total_delay_cost: number | string;
+  adjusted_project_cost: number | string;
+  adjusted_net_profit: number | string;
+  dev_margin_on_cost_pct: number | string;
+  project_irr_pct: number;
+  is_baseline: boolean;
+}
+
+export interface BreakevenAnalysis {
+  current_grv: number | string;
+  breakeven_grv: number | string;
+  revenue_safety_buffer_dollar: number | string;
+  revenue_safety_buffer_pct: number | string;
+  current_rate_per_sqm: number | string;
+  breakeven_rate_per_sqm: number | string;
+  current_total_cost: number | string;
+  max_tolerable_cost: number | string;
+  max_cost_overrun_dollar: number | string;
+  max_cost_overrun_pct: number | string;
+  current_land_cost: number | string;
+  max_tolerable_land_price: number | string;
+}
+
+export interface TornadoRankingItem {
+  rank: number;
+  driver: string;
+  category: string;
+  low_shock_profit: number | string;
+  high_shock_profit: number | string;
+  profit_swing: number | string;
+  elasticity_pct: number | string;
+}
+
+export interface BaselineKPIs {
+  gross_realisation_value: number | string;
+  net_realisation_value: number | string;
+  total_project_cost: number | string;
+  land_cost: number | string;
+  construction_cost: number | string;
+  finance_cost: number | string;
+  net_profit: number | string;
+  dev_margin_on_cost_pct: number | string;
+  project_irr_pct: number;
+  equity_amount: number | string;
+  interest_rate_pct: number | string;
+  duration_months: number;
+}
+
+export interface SensitivityDashboardResponse {
+  scenario_id: string;
+  scenario_name: string;
+  is_baseline: boolean;
+  baseline_kpis: BaselineKPIs;
+  matrix_2d: Sensitivity2DMatrix;
+  interest_rate_matrix: InterestRateSensitivityRow[];
+  delay_stress_test: DelayStressTestRow[];
+  breakeven: BreakevenAnalysis;
+  tornado_ranking: TornadoRankingItem[];
+}
+
+export interface SensitivitySimulateInput {
+  price_shift_pct: number;
+  cost_shift_pct: number;
+  interest_rate_delta_pct: number;
+  delay_months: number;
+}
+
+export interface SensitivitySimulateResponse {
+  price_shift_pct: number;
+  cost_shift_pct: number;
+  interest_rate_delta_pct: number;
+  delay_months: number;
+  simulated_grv: number | string;
+  simulated_nrv: number | string;
+  simulated_total_cost: number | string;
+  simulated_finance_cost: number | string;
+  simulated_net_profit: number | string;
+  simulated_margin_on_cost_pct: number | string;
+  simulated_project_irr_pct: number;
+  simulated_return_on_equity_pct: number | string;
+  simulated_residual_land_value: number | string;
+  status: 'optimal' | 'acceptable' | 'marginal' | 'deficit';
+}
+
+
