@@ -30,6 +30,12 @@ class UserCreate(BaseModel):
     role: str = "developer"
 
 
+class OrganizationRead(BaseModel):
+    id: str
+    name: str
+    slug: str
+    model_config = ConfigDict(from_attributes=True)
+
 class UserRead(BaseModel):
     id: str
     email: EmailStr
@@ -39,6 +45,7 @@ class UserRead(BaseModel):
     organization_id: str
     created_at: datetime.datetime
     updated_at: datetime.datetime
+    organization: Optional[OrganizationRead] = None
 
     model_config = ConfigDict(from_attributes=True)
 

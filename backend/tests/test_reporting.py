@@ -7,7 +7,7 @@ def test_executive_report_api(client: TestClient, auth_headers: dict):
         "name": "Pacific Executive Tower Feasibility",
         "description": "Premium 36-unit multi-residential feasibility test",
         "location": "Broadbeach, QLD",
-        "development_type": "multi_residential",
+        "development_type": "multi_unit_residential",
         "start_date": "2026-06-01",
         "target_completion_date": "2028-06-01"
     }, headers=auth_headers)
@@ -86,14 +86,12 @@ def test_executive_report_api(client: TestClient, auth_headers: dict):
 
 
 def test_executive_report_multi_tenant_isolation(
-    client: TestClient,
-    auth_headers: dict,
-    secondary_auth_headers: dict,
+    client: TestClient, auth_headers: dict, other_auth_headers: dict
 ):
     # Create project in Org 1
     proj_res = client.post("/api/v1/projects", json={
         "name": "Org 1 Confidential Feasibility",
-        "development_type": "commercial"
+        "development_type": "commercial_mixed_use"
     }, headers=auth_headers)
     assert proj_res.status_code == 201
     project_id = proj_res.json()["id"]
@@ -102,13 +100,13 @@ def test_executive_report_multi_tenant_isolation(
     # Attempt to access from Org 2 (Must return 404)
     bad_res = client.get(
         f"/api/v1/projects/{project_id}/scenarios/{scenario_id}/report",
-        headers=secondary_auth_headers
+        headers=other_auth_headers
     )
     assert bad_res.status_code == 404
 
     # HTML endpoint from Org 2 (Must also return 404)
     bad_html_res = client.get(
         f"/api/v1/projects/{project_id}/scenarios/{scenario_id}/report/html",
-        headers=secondary_auth_headers
+        headers=other_auth_headers
     )
     assert bad_html_res.status_code == 404

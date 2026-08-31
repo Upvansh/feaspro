@@ -665,42 +665,26 @@ export const api = {
 
   // Auth / User
   async login(credentials: { email?: string; username?: string; password?: string }): Promise<AuthToken> {
-    try {
-      const email = credentials.email || credentials.username || '';
-      const data = await fetchJson<AuthToken>(`${API_BASE}/auth/login/json`, {
-        method: 'POST',
-        body: JSON.stringify({ email, password: credentials.password }),
-      });
-      if (data.access_token) {
-        setToken(data.access_token);
-      }
-      return data;
-    } catch {
-      const localAuth = localBackend.login(credentials.email || credentials.username || 'demo@feaspro.com');
-      setToken(localAuth.access_token);
-      return localAuth;
+    const email = credentials.email || credentials.username || '';
+    const data = await fetchJson<AuthToken>(`${API_BASE}/auth/login/json`, {
+      method: 'POST',
+      body: JSON.stringify({ email, password: credentials.password }),
+    });
+    if (data.access_token) {
+      setToken(data.access_token);
     }
+    return data;
   },
 
   async register(data: RegisterInput): Promise<AuthToken> {
-    try {
-      const res = await fetchJson<AuthToken>(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
-      if (res.access_token) {
-        setToken(res.access_token);
-      }
-      return res;
-    } catch {
-      const localAuth = localBackend.register({
-        full_name: data.full_name,
-        email: data.email,
-        organization_name: data.organization_name,
-      });
-      setToken(localAuth.access_token);
-      return localAuth;
+    const res = await fetchJson<AuthToken>(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    if (res.access_token) {
+      setToken(res.access_token);
     }
+    return res;
   },
 
   logout(): void {
@@ -708,10 +692,6 @@ export const api = {
   },
 
   async getCurrentUser(): Promise<User> {
-    try {
-      return await fetchJson<User>(`${API_BASE}/auth/me`);
-    } catch {
-      return localBackend.getCurrentUser();
-    }
+    return await fetchJson<User>(`${API_BASE}/auth/me`);
   },
 };

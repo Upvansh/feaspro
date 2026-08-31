@@ -154,7 +154,7 @@ def test_sensitivity_api_endpoints(client: TestClient, auth_headers: dict):
 def test_sensitivity_multi_tenant_isolation(
     client: TestClient,
     auth_headers: dict,
-    secondary_auth_headers: dict,
+    other_auth_headers: dict,
 ):
     # Create project in Org 1
     proj_res = client.post("/api/v1/projects", json={
@@ -168,7 +168,7 @@ def test_sensitivity_multi_tenant_isolation(
     # Attempt access from Org 2 (Must return 404)
     bad_get = client.get(
         f"/api/v1/projects/{project_id}/scenarios/{scenario_id}/sensitivity",
-        headers=secondary_auth_headers
+        headers=other_auth_headers
     )
     assert bad_get.status_code == 404
 
@@ -176,6 +176,6 @@ def test_sensitivity_multi_tenant_isolation(
     bad_sim = client.post(
         f"/api/v1/projects/{project_id}/scenarios/{scenario_id}/sensitivity/simulate",
         json={"price_shift_pct": 5.0},
-        headers=secondary_auth_headers
+        headers=other_auth_headers
     )
     assert bad_sim.status_code == 404

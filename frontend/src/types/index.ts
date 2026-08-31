@@ -403,6 +403,11 @@ export interface User {
   role: string;
   is_active: boolean;
   organization_id: string;
+  organization?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
 }
 
 export interface AuthToken {

@@ -145,7 +145,7 @@ def compile_executive_report_data(
     mezz_rate = funding.mezzanine_interest_rate_pct if funding else Decimal("15.00")
 
     # 5. Schedule Milestones
-    milestones = db.query(ScheduleMilestone).filter(ScheduleMilestone.scenario_id == scenario.id).order_by(ScheduleMilestone.order_index, ScheduleMilestone.start_month).all()
+    milestones = db.query(ScheduleMilestone).filter(ScheduleMilestone.scenario_id == scenario.id).order_by(ScheduleMilestone.start_month).all()
     duration = max([m.end_month for m in milestones], default=18) if milestones else 18
 
     # 6. Execute Master Calculation Engine
@@ -153,8 +153,8 @@ def compile_executive_report_data(
         land_purchase_price=purchase_price,
         land_deposit_amount=deposit,
         land_acquisition_costs=acq_amounts if acq_amounts else None,
-        state=land.state if land else "QLD",
-        is_foreign_purchaser=land.is_foreign_purchaser if land else False,
+        state=getattr(land, 'state', 'QLD') if land else "QLD",
+        is_foreign_purchaser=getattr(land, 'is_foreign_purchaser', False) if land else False,
         cost_items=cost_dicts,
         sales_items=sales_dicts,
         use_gst_margin_scheme=True,

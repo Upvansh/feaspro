@@ -88,11 +88,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="sidebar-footer">
         <div className="user-avatar">
-          {currentUser?.full_name ? currentUser.full_name.slice(0, 2).toUpperCase() : 'AM'}
+          {currentUser?.full_name ? currentUser.full_name.slice(0, 2).toUpperCase() : 'GU'}
         </div>
         <div className="user-info">
-          <span className="user-name">{currentUser?.full_name || 'Alex Mercer'}</span>
-          <span className="user-org">Apex Property Group</span>
+          <span className="user-name">{currentUser?.full_name || 'Guest User'}</span>
+          <span className="user-org">{currentUser?.organization?.name || 'No Organization'}</span>
         </div>
         {onLogout && (
           <button

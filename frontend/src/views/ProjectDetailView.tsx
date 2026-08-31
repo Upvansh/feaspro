@@ -410,10 +410,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
                     <span className="info-val">{project.location || 'Not specified'}</span>
                   </div>
 
-                  <div className="info-field">
-                    <span className="info-label">Tenant Organization</span>
-                    <span className="info-val">Apex Property Group</span>
-                  </div>
                 </div>
               </div>
 
