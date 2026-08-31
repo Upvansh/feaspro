@@ -5,7 +5,6 @@ import {
   BarChart3,
   FileText,
   Settings,
-  HelpCircle,
   FolderPlus,
   LogOut,
 } from 'lucide-react';
@@ -83,13 +82,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <span className="nav-section-title">Preferences</span>
-        <button className="nav-item">
+        <button
+          className={`nav-item ${currentView === 'settings' ? 'active' : ''}`}
+          onClick={() => onNavigate('settings')}
+        >
           <Settings size={18} />
           <span>Settings</span>
-        </button>
-        <button className="nav-item">
-          <HelpCircle size={18} />
-          <span>Help & Methodology</span>
         </button>
       </div>
 

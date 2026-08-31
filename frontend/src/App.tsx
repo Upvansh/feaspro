@@ -10,10 +10,11 @@ import { RegisterView } from './views/RegisterView';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ScenarioManagerView } from './views/ScenarioManagerView';
 import { PortfolioAnalyticsView } from './views/PortfolioAnalyticsView';
+import { SettingsView } from './views/SettingsView';
 
 export const App: React.FC = () => {
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
-  const [currentView, setCurrentView] = useState<'dashboard' | 'project-detail' | 'scenarios' | 'analytics'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'project-detail' | 'scenarios' | 'analytics' | 'settings'>('dashboard');
   const [activeProjectTab, setActiveProjectTab] = useState<TabType | undefined>();
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -171,6 +172,9 @@ export const App: React.FC = () => {
           else if (view === 'analytics') {
             setSelectedProject(null);
             setCurrentView('analytics');
+          } else if (view === 'settings') {
+            setSelectedProject(null);
+            setCurrentView('settings');
           } else if (view === 'reports') {
             if (selectedProject) {
               setActiveProjectTab('reports');
@@ -217,6 +221,8 @@ export const App: React.FC = () => {
             onSelectProject={handleSelectProject}
             onOpenCreateProject={() => setIsCreateModalOpen(true)}
           />
+        ) : currentView === 'settings' ? (
+          <SettingsView currentUser={currentUser} />
         ) : currentView === 'scenarios' ? (
           <ScenarioManagerView
             projects={projects}
