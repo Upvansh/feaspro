@@ -1,15 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Plus,
-  Search,
-  LayoutGrid,
-  List,
-  Building2,
-  TrendingUp,
-  Clock,
-  Layers,
-  FolderOpen,
-} from 'lucide-react';
+import { BarChart3, TrendingUp, Clock, Layers, Building2, Plus, Search, LayoutGrid, List, FolderOpen } from 'lucide-react';
 import { ProjectListItem } from '../types';
 import { ProjectCard } from '../components/ProjectCard';
 import { ProjectTable } from '../components/ProjectTable';
@@ -19,6 +9,7 @@ interface DashboardViewProps {
   loading: boolean;
   onOpenCreateProject: () => void;
   onSelectProject: (projectId: string) => void;
+  onOpenAnalytics?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -26,6 +17,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   loading,
   onOpenCreateProject,
   onSelectProject,
+  onOpenAnalytics,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('ALL');
@@ -62,10 +54,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </p>
         </div>
 
-        <button className="btn btn-primary" onClick={onOpenCreateProject}>
-          <Plus size={18} />
-          <span>New Feasibility</span>
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {onOpenAnalytics && (
+            <button className="btn btn-outline" onClick={onOpenAnalytics}>
+              <BarChart3 size={18} />
+              <span>Portfolio Analytics</span>
+            </button>
+          )}
+
+          <button className="btn btn-primary" onClick={onOpenCreateProject}>
+            <Plus size={18} />
+            <span>New Feasibility</span>
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards */}

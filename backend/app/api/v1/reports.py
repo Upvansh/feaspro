@@ -233,7 +233,7 @@ def compile_executive_report_data(
     for s in sales_items:
         units = s.total_units or 0
         total_units_sum += units
-        area = units * (s.avg_internal_area or 0.0)
+        area = float(units) * float(s.avg_internal_area or 0.0)
         total_gfa_sum += area
         rev_pct = ((s.total_revenue / grv) * Decimal("100.00")).quantize(Decimal("0.1")) if grv > 0 else Decimal("0.0")
         sales_mix_items.append(
@@ -241,8 +241,8 @@ def compile_executive_report_data(
                 id=s.id,
                 name=s.name,
                 total_units=units,
-                avg_internal_area=s.avg_internal_area or 0.0,
-                avg_external_area=s.avg_external_area or 0.0,
+                avg_internal_area=float(s.avg_internal_area or 0.0),
+                avg_external_area=float(s.avg_external_area or 0.0),
                 total_area_sqm=round(area, 1),
                 price_per_sqm=s.price_per_sqm or Decimal("0.00"),
                 unit_sale_price=s.unit_sale_price or Decimal("0.00"),
@@ -296,11 +296,13 @@ def compile_executive_report_data(
         )
 
     # Executive Notes
+    debt_pct = funding_res.get("debt_percentage", Decimal("0.00"))
+    gst_amt = engine_output['gst'].get('gst_payable_on_sales', engine_output['gst'].get('net_gst_liability', Decimal("0.00")))
     notes: List[str] = [
         f"Target Development Margin on Cost achieves {metrics['margin_on_cost_pct']}% against standard commercial hurdle thresholds (15.0% - 20.0%).",
-        f"Capital Stack incorporates {funding_res['actual_loan_to_cost_pct']}% Loan-to-Cost (LTC) and {funding_res['actual_loan_to_value_pct']}% Loan-to-Value (LVR) gearing.",
+        f"Capital Stack incorporates {debt_pct:.1f}% Debt Gearing with ${funding_res['required_developer_equity']:,.2f} required developer equity.",
         f"Projected Internal Rate of Return (IRR) is {metrics['project_irr_pct']}% p.a. with an Equity Multiple of {equity_multiple}x over a {duration}-month development cycle.",
-        f"GST Margin Scheme applied: Total estimated GST liability of ${engine_output['gst']['gst_payable']:,.2f}.",
+        f"GST Margin Scheme applied: Total estimated GST liability of ${gst_amt:,.2f}.",
         f"Residual Land Value (RLV) calculated at ${valuation_rlv['residual_land_value_cost_target']:,.2f} at a 20.0% developer target margin hurdle.",
     ]
 
@@ -340,22 +342,22 @@ def compile_executive_report_data(
             wacc_pct=engine_output["wacc_pct"],
         ),
         capital_stack=CapitalStackSummary(
-            senior_debt_facility=funding_res["senior_debt_facility"],
-            senior_max_ltc_pct=funding_res["senior_max_ltc_pct"],
-            senior_max_lvr_pct=funding_res["senior_max_lvr_pct"],
-            senior_interest_rate_pct=funding_res["senior_interest_rate_pct"],
-            senior_capitalized_interest=funding_res["senior_capitalized_interest"],
-            senior_fees=funding_res["senior_line_fee_amount"] + funding_res["senior_establishment_fee_amount"],
-            mezzanine_enabled=funding_res["mezzanine_enabled"],
-            mezzanine_facility=funding_res["mezzanine_facility"],
-            mezzanine_interest_rate_pct=funding_res["mezzanine_interest_rate_pct"],
-            mezzanine_capitalized_interest=funding_res["mezzanine_capitalized_interest"],
-            required_equity=funding_res["required_developer_equity"],
-            total_debt_facility=funding_res["total_debt_facility"],
-            peak_debt_exposure=funding_res["peak_debt_exposure"],
-            loan_to_cost_pct=funding_res["actual_loan_to_cost_pct"],
-            loan_to_value_pct=funding_res["actual_loan_to_value_pct"],
-            equity_ratio_pct=funding_res["actual_equity_ratio_pct"],
+            senior_debt_facility=funding_res.get("senior_debt_facility_limit", funding_res.get("senior_debt_facility", Decimal("0.00"))),
+            senior_max_ltc_pct=senior_ltc,
+            senior_max_lvr_pct=senior_lvr,
+            senior_interest_rate_pct=senior_rate,
+            senior_capitalized_interest=funding_res.get("senior_interest_cost", funding_res.get("senior_capitalized_interest", Decimal("0.00"))),
+            senior_fees=funding_res.get("senior_establishment_fee", Decimal("0.00")) + funding_res.get("senior_line_fee", Decimal("0.00")),
+            mezzanine_enabled=mezz_enabled,
+            mezzanine_facility=funding_res.get("mezzanine_facility_limit", funding_res.get("mezzanine_facility", Decimal("0.00"))),
+            mezzanine_interest_rate_pct=mezz_rate,
+            mezzanine_capitalized_interest=funding_res.get("mezzanine_interest_cost", funding_res.get("mezzanine_capitalized_interest", Decimal("0.00"))),
+            required_equity=funding_res.get("required_developer_equity", Decimal("0.00")),
+            total_debt_facility=funding_res.get("total_debt_facility", Decimal("0.00")),
+            peak_debt_exposure=funding_res.get("total_debt_facility", funding_res.get("peak_debt_exposure", Decimal("0.00"))),
+            loan_to_cost_pct=funding_res.get("debt_percentage", funding_res.get("loan_to_cost_pct", Decimal("0.00"))),
+            loan_to_value_pct=funding_res.get("senior_lvr_cap", funding_res.get("actual_loan_to_value_pct", senior_lvr)),
+            equity_ratio_pct=funding_res.get("equity_percentage", funding_res.get("equity_ratio_pct", Decimal("0.00"))),
         ),
         cost_breakdown=cost_breakdown,
         sales_mix=sales_mix_items,

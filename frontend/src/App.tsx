@@ -4,16 +4,17 @@ import { api, getToken, onUnauthorized } from './services/api';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { DashboardView } from './views/DashboardView';
-import { ProjectDetailView } from './views/ProjectDetailView';
+import { ProjectDetailView, TabType } from './views/ProjectDetailView';
 import { LoginView } from './views/LoginView';
 import { RegisterView } from './views/RegisterView';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { ScenarioManagerView } from './views/ScenarioManagerView';
+import { PortfolioAnalyticsView } from './views/PortfolioAnalyticsView';
 
 export const App: React.FC = () => {
   const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
-  const [currentView, setCurrentView] = useState<'dashboard' | 'project-detail' | 'scenarios'>('dashboard');
-  const [activeProjectTab, setActiveProjectTab] = useState<'overview' | 'scenarios' | undefined>();
+  const [currentView, setCurrentView] = useState<'dashboard' | 'project-detail' | 'scenarios' | 'analytics'>('dashboard');
+  const [activeProjectTab, setActiveProjectTab] = useState<TabType | undefined>();
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -163,10 +164,33 @@ export const App: React.FC = () => {
   return (
     <div className="app-container">
       <Sidebar
-        currentView={currentView === 'dashboard' ? 'dashboard' : currentView === 'scenarios' ? 'scenarios' : 'projects'}
-        onNavigate={(view) => {
+        currentView={currentView}
+        onNavigate={async (view) => {
           if (view === 'dashboard') handleNavigateHome();
           else if (view === 'scenarios') setCurrentView('scenarios');
+          else if (view === 'analytics') {
+            setSelectedProject(null);
+            setCurrentView('analytics');
+          } else if (view === 'reports') {
+            if (selectedProject) {
+              setActiveProjectTab('reports');
+              setCurrentView('project-detail');
+            } else if (projects.length > 0) {
+              try {
+                setLoading(true);
+                const proj = await api.getProject(projects[0].id);
+                setSelectedProject(proj);
+                setActiveProjectTab('reports');
+                setCurrentView('project-detail');
+              } catch (e) {
+                console.error(e);
+              } finally {
+                setLoading(false);
+              }
+            } else {
+              handleNavigateHome();
+            }
+          }
         }}
         currentUser={currentUser}
         onOpenCreateProject={() => setIsCreateModalOpen(true)}
@@ -182,6 +206,16 @@ export const App: React.FC = () => {
             loading={loading}
             onOpenCreateProject={() => setIsCreateModalOpen(true)}
             onSelectProject={handleSelectProject}
+            onOpenAnalytics={() => {
+              setSelectedProject(null);
+              setCurrentView('analytics');
+            }}
+          />
+        ) : currentView === 'analytics' ? (
+          <PortfolioAnalyticsView
+            projects={projects}
+            onSelectProject={handleSelectProject}
+            onOpenCreateProject={() => setIsCreateModalOpen(true)}
           />
         ) : currentView === 'scenarios' ? (
           <ScenarioManagerView

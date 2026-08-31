@@ -35,7 +35,7 @@ interface ProjectDetailViewProps {
   initialTab?: TabType;
 }
 
-type TabType =
+export type TabType =
   | 'overview'
   | 'land'
   | 'costs'
@@ -219,16 +219,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('land')}
           >
             <span>Land & Acquisition</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: isLandConfigured ? '#ecfdf5' : '#f1f5f9',
-                color: isLandConfigured ? '#047857' : '#64748b',
-                fontWeight: 600,
-              }}
-            >
-              {isLandConfigured ? 'Active' : 'Setup'}
-            </span>
           </button>
 
           <button
@@ -236,16 +226,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('costs')}
           >
             <span>Costs</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Active
-            </span>
           </button>
 
           <button
@@ -253,16 +233,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('sales')}
           >
             <span>Sales</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Active
-            </span>
           </button>
 
           <button
@@ -270,16 +240,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('funding')}
           >
             <span>Funding</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Active
-            </span>
           </button>
 
           <button
@@ -287,16 +247,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('schedule')}
           >
             <span>Schedule</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Active
-            </span>
           </button>
 
           <button
@@ -304,16 +254,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('cashflow')}
           >
             <span>Cash Flow</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#eff6ff',
-                color: '#2563eb',
-                fontWeight: 600,
-              }}
-            >
-              Live
-            </span>
           </button>
 
           <button
@@ -328,16 +268,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('reports')}
           >
             <span>Reports</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Live
-            </span>
           </button>
 
           <button
@@ -345,16 +275,6 @@ export const ProjectDetailView: React.FC<ProjectDetailViewProps> = ({
             onClick={() => setActiveTab('sensitivity')}
           >
             <span>Sensitivity</span>
-            <span
-              className="tab-badge-indicator"
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                fontWeight: 600,
-              }}
-            >
-              Live
-            </span>
           </button>
         </div>
       </div>

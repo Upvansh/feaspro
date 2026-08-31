@@ -213,6 +213,55 @@ def get_scenario_comparison(
         scenarios=metrics_list
     )
 
+@router.get("/scenarios/compare", response_model=ScenarioComparisonResponse)
+def compare_scenarios_query(
+    ids: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    id_list = [i.strip() for i in ids.split(",") if i.strip()]
+    if not id_list:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No IDs provided for comparison")
+
+    # Check if first ID is a project ID
+    first_id = id_list[0]
+    project = db.query(Project).filter(
+        Project.id == first_id,
+        Project.organization_id == current_user.organization_id
+    ).first()
+
+    if project and len(id_list) == 1:
+        scenarios = db.query(Scenario).filter(Scenario.project_id == project.id).order_by(Scenario.created_at.asc()).all()
+        baseline = next((s for s in scenarios if s.is_baseline), scenarios[0] if scenarios else None)
+        metrics_list = [compute_single_scenario_metrics(s, db) for s in scenarios]
+        return ScenarioComparisonResponse(
+            project_id=project.id,
+            project_name=project.name,
+            baseline_scenario_id=baseline.id if baseline else None,
+            scenarios=metrics_list
+        )
+
+    # Otherwise query by scenario IDs
+    scenarios = db.query(Scenario).join(Project).filter(
+        Scenario.id.in_(id_list),
+        Project.organization_id == current_user.organization_id
+    ).order_by(Scenario.created_at.asc()).all()
+
+    if not scenarios:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No matching scenarios found")
+
+    proj = db.query(Project).filter(Project.id == scenarios[0].project_id).first()
+    baseline = next((s for s in scenarios if s.is_baseline), scenarios[0])
+    metrics_list = [compute_single_scenario_metrics(s, db) for s in scenarios]
+
+    return ScenarioComparisonResponse(
+        project_id=proj.id if proj else scenarios[0].project_id,
+        project_name=proj.name if proj else "Feasibility Model",
+        baseline_scenario_id=baseline.id,
+        scenarios=metrics_list
+    )
+
+
 @router.post("/projects/{project_id}/scenarios/{scenario_id}/clone", response_model=ScenarioRead, status_code=status.HTTP_201_CREATED)
 def clone_scenario(
     project_id: str,

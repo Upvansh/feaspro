@@ -59,20 +59,29 @@ def init_db(db: Session) -> None:
         db.commit()
         db.refresh(demo_org)
 
-    # Check if demo user exists
-    demo_user = db.query(User).filter(User.email == "developer@apexdev.com.au").first()
-    if not demo_user:
-        demo_user = User(
-            email="developer@apexdev.com.au",
-            hashed_password=get_password_hash("FeasPro2026!"),
-            full_name="Alex Mercer",
-            role="developer",
-            organization_id=demo_org.id,
-            is_active=True
-        )
-        db.add(demo_user)
-        db.commit()
-        db.refresh(demo_user)
+    # Seed demo users
+    seed_users = [
+        ("developer@apexdev.com.au", "FeasPro2026!", "Alex Mercer", "developer"),
+        ("alex@apexproperty.com.au", "password123", "Alex Mercer", "admin"),
+        ("mahi@gmail.com", "password123", "Mahi", "developer"),
+    ]
+    demo_user = None
+    for email, pwd, name, role in seed_users:
+        u = db.query(User).filter(User.email == email).first()
+        if not u:
+            u = User(
+                email=email,
+                hashed_password=get_password_hash(pwd),
+                full_name=name,
+                role=role,
+                organization_id=demo_org.id,
+                is_active=True,
+            )
+            db.add(u)
+            db.commit()
+            db.refresh(u)
+        if not demo_user:
+            demo_user = u
 
     # Check if sample demo project exists
     existing_project = db.query(Project).filter(

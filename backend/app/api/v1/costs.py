@@ -87,6 +87,7 @@ def get_costs(
             "quantity": i.quantity,
             "rate": i.rate,
             "amount": i.amount,
+            "gst_applicable": i.gst_applicable,
         }
         for i in items
     ]
@@ -133,6 +134,7 @@ def update_costs_batch(
             quantity=item_in.quantity,
             rate=item_in.rate,
             amount=item_in.amount,
+            gst_applicable=item_in.gst_applicable,
             phasing_curve=item_in.phasing_curve,
             start_month=item_in.start_month,
             end_month=item_in.end_month,

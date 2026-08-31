@@ -66,11 +66,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <span className="nav-section-title">Analytics & Roadmap</span>
-        <button className="nav-item" onClick={() => onNavigate('dashboard')}>
+        <button
+          className={`nav-item ${currentView === 'analytics' ? 'active' : ''}`}
+          onClick={() => onNavigate('analytics')}
+        >
           <BarChart3 size={18} />
           <span>Portfolio Analytics</span>
         </button>
-        <button className="nav-item" onClick={() => onNavigate('dashboard')}>
+
+        <button
+          className={`nav-item ${currentView === 'reports' ? 'active' : ''}`}
+          onClick={() => onNavigate('reports')}
+        >
           <FileText size={18} />
           <span>Executive Reports</span>
         </button>

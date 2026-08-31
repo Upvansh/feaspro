@@ -255,11 +255,79 @@ export const api = {
         `${API_BASE}/scenarios/compare?ids=${idsParam}`
       );
     } catch {
+      const projId = typeof scenarioIdsOrProjectId === 'string' ? scenarioIdsOrProjectId : 'demo-proj-1';
       return {
-        project_id: typeof scenarioIdsOrProjectId === 'string' ? scenarioIdsOrProjectId : 'demo-proj-1',
-        project_name: 'Metro Residences',
+        project_id: projId,
+        project_name: 'Metro Residences Development',
         baseline_scenario_id: 'demo-scen-1',
-        scenarios: [],
+        scenarios: [
+          {
+            scenario_id: 'demo-scen-1',
+            name: 'Base Case (34 Apts + Retail)',
+            is_baseline: true,
+            status: 'baseline',
+            total_units: 34,
+            total_internal_area: 2840,
+            gross_realisation_value: 36850000,
+            net_realisation_value: 35560250,
+            land_acquisition_total: 6850000,
+            construction_subtotal: 18450000,
+            total_development_cost_ex_land: 22840000,
+            total_project_cost: 29690000,
+            net_profit: 5870250,
+            margin_on_cost_pct: 19.77,
+            margin_on_grv_pct: 15.93,
+            project_irr: 22.4,
+            peak_debt: 19400000,
+            required_developer_equity: 8900000,
+            return_on_equity_pct: 65.95,
+            duration_months: 24,
+          },
+          {
+            scenario_id: 'demo-scen-2',
+            name: 'Scheme B (Higher Density 42 Apts)',
+            is_baseline: false,
+            status: 'draft',
+            total_units: 42,
+            total_internal_area: 3250,
+            gross_realisation_value: 43200000,
+            net_realisation_value: 41688000,
+            land_acquisition_total: 6850000,
+            construction_subtotal: 21600000,
+            total_development_cost_ex_land: 26450000,
+            total_project_cost: 33300000,
+            net_profit: 8388000,
+            margin_on_cost_pct: 25.19,
+            margin_on_grv_pct: 19.42,
+            project_irr: 26.8,
+            peak_debt: 21800000,
+            required_developer_equity: 9990000,
+            return_on_equity_pct: 83.96,
+            duration_months: 26,
+          },
+          {
+            scenario_id: 'demo-scen-3',
+            name: 'Scheme C (Luxury Low Density 24 Suites)',
+            is_baseline: false,
+            status: 'draft',
+            total_units: 24,
+            total_internal_area: 2680,
+            gross_realisation_value: 39500000,
+            net_realisation_value: 38117500,
+            land_acquisition_total: 6850000,
+            construction_subtotal: 19800000,
+            total_development_cost_ex_land: 24200000,
+            total_project_cost: 31050000,
+            net_profit: 7067500,
+            margin_on_cost_pct: 22.76,
+            margin_on_grv_pct: 17.89,
+            project_irr: 24.1,
+            peak_debt: 20180000,
+            required_developer_equity: 9315000,
+            return_on_equity_pct: 75.87,
+            duration_months: 22,
+          },
+        ],
       };
     }
   },
@@ -666,25 +734,47 @@ export const api = {
   // Auth / User
   async login(credentials: { email?: string; username?: string; password?: string }): Promise<AuthToken> {
     const email = credentials.email || credentials.username || '';
-    const data = await fetchJson<AuthToken>(`${API_BASE}/auth/login/json`, {
-      method: 'POST',
-      body: JSON.stringify({ email, password: credentials.password }),
-    });
-    if (data.access_token) {
-      setToken(data.access_token);
+    try {
+      const data = await fetchJson<AuthToken>(`${API_BASE}/auth/login/json`, {
+        method: 'POST',
+        body: JSON.stringify({ email, password: credentials.password }),
+      });
+      if (data.access_token) {
+        setToken(data.access_token);
+      }
+      return data;
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.message.includes('Incorrect') || err.message.includes('401'))) {
+        throw err;
+      }
+      const localAuth = localBackend.login(email || 'demo@feaspro.com');
+      setToken(localAuth.access_token);
+      return localAuth;
     }
-    return data;
   },
 
   async register(data: RegisterInput): Promise<AuthToken> {
-    const res = await fetchJson<AuthToken>(`${API_BASE}/auth/register`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    if (res.access_token) {
-      setToken(res.access_token);
+    try {
+      const res = await fetchJson<AuthToken>(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      if (res.access_token) {
+        setToken(res.access_token);
+      }
+      return res;
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.message.includes('already exists') || err.message.includes('400'))) {
+        throw err;
+      }
+      const localAuth = localBackend.register({
+        full_name: data.full_name,
+        email: data.email,
+        organization_name: data.organization_name,
+      });
+      setToken(localAuth.access_token);
+      return localAuth;
     }
-    return res;
   },
 
   logout(): void {
@@ -692,6 +782,10 @@ export const api = {
   },
 
   async getCurrentUser(): Promise<User> {
-    return await fetchJson<User>(`${API_BASE}/auth/me`);
+    try {
+      return await fetchJson<User>(`${API_BASE}/auth/me`);
+    } catch {
+      return localBackend.getCurrentUser();
+    }
   },
 };
