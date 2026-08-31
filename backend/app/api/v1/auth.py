@@ -2,6 +2,7 @@ import re
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from backend.app.core.database import get_db
 from backend.app.core.security import verify_password, get_password_hash, create_access_token, get_current_user
@@ -31,8 +32,8 @@ def register_user_and_organization(payload: RegisterRequest, db: Session = Depen
         )
 
     # Check for duplicate email
-    email = payload.email.lower().strip()
-    existing_user = db.query(User).filter(User.email == email).first()
+    email = str(payload.email).lower().strip()
+    existing_user = db.query(User).filter(func.lower(User.email) == email).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -82,7 +83,8 @@ def register_user_and_organization(payload: RegisterRequest, db: Session = Depen
 
 @router.post("/login", response_model=Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == form_data.username).first()
+    email_clean = form_data.username.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == email_clean).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -103,7 +105,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 @router.post("/login/json", response_model=Token)
 def login_json(payload: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email).first()
+    email_clean = str(payload.email).strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == email_clean).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

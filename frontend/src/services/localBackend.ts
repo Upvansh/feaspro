@@ -88,18 +88,23 @@ export const localBackend = {
   },
 
   login(email: string): AuthToken {
-    let user = getStored<User | null>(STORAGE_KEY_USER, null);
-    if (!user) {
-      user = {
-        id: `u-${Date.now()}`,
-        email: email || 'demo@feaspro.com',
-        full_name: email.split('@')[0] || 'Demo Developer',
-        role: 'admin',
-        organization_id: 'org-demo',
-        is_active: true,
-      };
-      setStored(STORAGE_KEY_USER, user);
-    }
+    const rawEmail = (email || 'demo@feaspro.com').trim().toLowerCase();
+    const rawName = rawEmail.split('@')[0];
+    const formattedName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+    const user: User = {
+      id: `u-${Date.now()}`,
+      email: rawEmail,
+      full_name: formattedName || 'Developer',
+      role: 'admin',
+      organization_id: 'org-demo',
+      organization: {
+        id: 'org-demo',
+        name: 'Apex Property Group',
+        slug: 'apex-developments',
+      },
+      is_active: true,
+    };
+    setStored(STORAGE_KEY_USER, user);
     return {
       access_token: `mock-token-${Date.now()}`,
       token_type: 'bearer',
