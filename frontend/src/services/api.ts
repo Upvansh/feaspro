@@ -173,7 +173,7 @@ export const api = {
         method: 'DELETE',
       });
     } catch {
-      return localBackend.getProject(id);
+      return localBackend.archiveProject(id);
     }
   },
 
@@ -183,7 +183,7 @@ export const api = {
         method: 'POST',
       });
     } catch {
-      return localBackend.getProject(id);
+      return localBackend.restoreProject(id);
     }
   },
 
@@ -242,7 +242,7 @@ export const api = {
         method: 'DELETE',
       });
     } catch {
-      // Local ignore
+      localBackend.deleteScenario(scenarioId);
     }
   },
 

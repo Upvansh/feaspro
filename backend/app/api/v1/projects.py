@@ -34,8 +34,8 @@ def create_project(
         organization_id=current_user.organization_id,
         created_by_id=current_user.id,
         name=project_in.name.strip(),
-        description=project_in.description,
-        location=project_in.location,
+        description=project_in.description.strip() if project_in.description else None,
+        location=project_in.location.strip() if project_in.location else None,
         development_type=project_in.development_type.value,
         status=project_in.status.value,
         start_date=project_in.start_date,
@@ -171,6 +171,8 @@ def update_project(
         update_data["status"] = update_data["status"].value
 
     for field, value in update_data.items():
+        if isinstance(value, str):
+            value = value.strip()
         setattr(project, field, value)
 
     project.updated_at = datetime.datetime.now(datetime.timezone.utc)

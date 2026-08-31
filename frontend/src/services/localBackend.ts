@@ -200,6 +200,40 @@ export const localBackend = {
     return DEFAULT_PROJECT;
   },
 
+  archiveProject(id: string): Project {
+    const projects = getStored<Project[]>(STORAGE_KEY_PROJECTS, [DEFAULT_PROJECT]);
+    const idx = projects.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      projects[idx] = {
+        ...projects[idx],
+        is_archived: true,
+        status: 'archived',
+        archived_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setStored(STORAGE_KEY_PROJECTS, projects);
+      return projects[idx];
+    }
+    return DEFAULT_PROJECT;
+  },
+
+  restoreProject(id: string): Project {
+    const projects = getStored<Project[]>(STORAGE_KEY_PROJECTS, [DEFAULT_PROJECT]);
+    const idx = projects.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      projects[idx] = {
+        ...projects[idx],
+        is_archived: false,
+        status: 'active',
+        archived_at: undefined,
+        updated_at: new Date().toISOString(),
+      };
+      setStored(STORAGE_KEY_PROJECTS, projects);
+      return projects[idx];
+    }
+    return DEFAULT_PROJECT;
+  },
+
   getScenarios(projectId: string): Scenario[] {
     const scenarios = getStored<Scenario[]>(STORAGE_KEY_SCENARIOS, [DEFAULT_SCENARIO]);
     const filtered = scenarios.filter(s => s.project_id === projectId || projectId === 'demo-proj-1');
@@ -221,6 +255,12 @@ export const localBackend = {
     scenarios.push(newScen);
     setStored(STORAGE_KEY_SCENARIOS, scenarios);
     return newScen;
+  },
+
+  deleteScenario(scenarioId: string): void {
+    const scenarios = getStored<Scenario[]>(STORAGE_KEY_SCENARIOS, [DEFAULT_SCENARIO]);
+    const remaining = scenarios.filter(s => s.id !== scenarioId);
+    setStored(STORAGE_KEY_SCENARIOS, remaining);
   },
 
   getLand(_projectId: string, _scenarioId: string): LandInput {

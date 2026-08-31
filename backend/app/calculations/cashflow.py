@@ -83,11 +83,13 @@ def calculate_irr_from_cashflows(cashflows: List[float], max_iter: int = 1000, t
 
     # Convert monthly rate to annualized percentage: (1 + r)^12 - 1
     try:
+        if r <= -0.999:
+            return -100.0
         annual_irr = ((1.0 + r) ** 12 - 1.0) * 100.0
         if math.isnan(annual_irr) or math.isinf(annual_irr):
             return 0.0
-        return round(annual_irr, 2)
-    except Exception:
+        return round(float(annual_irr), 2)
+    except (OverflowError, ValueError, Exception):
         return 0.0
 
 def generate_cash_flow_schedule(

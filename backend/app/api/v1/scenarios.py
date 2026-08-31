@@ -10,7 +10,7 @@ from backend.app.models.scenario import Scenario
 from backend.app.models.land import LandInput, AcquisitionCostItem
 from backend.app.models.cost import CostItem
 from backend.app.models.sales import SalesProductItem
-from backend.app.models.funding import FundingAssumption
+from backend.app.models.funding import FundingAssumption, FundingTranche
 from backend.app.models.schedule import ScheduleMilestone
 from backend.app.schemas.scenario import (
     ScenarioCreate,
@@ -250,7 +250,10 @@ def compare_scenarios_query(
     if not scenarios:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No matching scenarios found")
 
-    proj = db.query(Project).filter(Project.id == scenarios[0].project_id).first()
+    proj = db.query(Project).filter(
+        Project.id == scenarios[0].project_id,
+        Project.organization_id == current_user.organization_id
+    ).first()
     baseline = next((s for s in scenarios if s.is_baseline), scenarios[0])
     metrics_list = [compute_single_scenario_metrics(s, db) for s in scenarios]
 
@@ -390,7 +393,22 @@ def clone_scenario(
         )
         db.add(new_f)
 
-    # 5. Clone Schedule
+    # 5. Clone Funding Tranches (Phase 2 Multi-Tranche)
+    source_tranches = db.query(FundingTranche).filter(FundingTranche.scenario_id == source.id).all()
+    for tr in source_tranches:
+        new_tr = FundingTranche(
+            scenario_id=new_scenario.id,
+            tranche_type=tr.tranche_type,
+            name=tr.name,
+            priority_order=tr.priority_order,
+            amount=tr.amount,
+            hurdle_rate_pct=tr.hurdle_rate_pct,
+            investor_split_pct=tr.investor_split_pct,
+            developer_promote_pct=tr.developer_promote_pct,
+        )
+        db.add(new_tr)
+
+    # 6. Clone Schedule
     source_sched = db.query(ScheduleMilestone).filter(ScheduleMilestone.scenario_id == source.id).all()
     for m in source_sched:
         new_m = ScheduleMilestone(
@@ -473,6 +491,19 @@ def delete_scenario(
     if total_scenarios <= 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete the only remaining scenario in a project.")
 
+    was_baseline = scenario.is_baseline
+    project_id = scenario.project_id
+
     db.delete(scenario)
+    db.flush()
+
+    # If the deleted scenario was the baseline, promote the oldest remaining scenario
+    if was_baseline:
+        remaining = db.query(Scenario).filter(
+            Scenario.project_id == project_id
+        ).order_by(Scenario.created_at.asc()).first()
+        if remaining:
+            remaining.is_baseline = True
+
     db.commit()
     return None
