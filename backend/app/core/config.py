@@ -14,8 +14,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
     ALGORITHM: str = "HS256"
     
-    # Database URL
-    DATABASE_URL: str = "sqlite:///./feaspro.db"
+    # Database URL (PostgreSQL / Supabase)
+    DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/postgres"
     
     # CORS
     BACKEND_CORS_ORIGINS: List[str] = [
@@ -51,7 +51,3 @@ class Settings(BaseSettings):
     )
 
 settings = Settings()
-
-# Enforce writable SQLite path on Vercel runtime
-if os.getenv("VERCEL") and settings.DATABASE_URL.startswith("sqlite"):
-    settings.DATABASE_URL = "sqlite:////tmp/feaspro.db"

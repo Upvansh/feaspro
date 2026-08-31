@@ -6,20 +6,34 @@ from sqlalchemy.orm import sessionmaker, Session
 from backend.app.core.config import settings
 from backend.app.models.base import Base
 
-# Database engine configuration - compatible with SQLite and PostgreSQL
+# Database engine configuration - compatible with PostgreSQL (Supabase) and SQLite
 db_url = settings.DATABASE_URL
-# On Vercel serverless functions, SQLite must always use the writable /tmp directory
-if os.getenv("VERCEL") and db_url.startswith("sqlite"):
-    db_url = "sqlite:////tmp/feaspro.db"
+
+# Normalize legacy postgres:// or standard postgresql:// to postgresql+psycopg://
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+psycopg://", 1)
+elif db_url.startswith("postgresql://") and not any(drv in db_url for drv in ["+psycopg", "+asyncpg", "+psycopg2"]):
+    db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 
 connect_args = {}
-if db_url.startswith("sqlite"):
-    connect_args = {"check_same_thread": False}
+engine_kwargs = {
+    "pool_pre_ping": True,
+}
+
+if db_url.startswith("postgresql"):
+    engine_kwargs.update({
+        "pool_size": 10,
+        "max_overflow": 20,
+        "pool_timeout": 30,
+        "pool_recycle": 1800,
+    })
+elif db_url.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
 
 engine = create_engine(
     db_url,
     connect_args=connect_args,
-    pool_pre_ping=True
+    **engine_kwargs
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -32,7 +46,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 def init_db(db: Session) -> None:
-    """Initialize tables and create default demo organization, user, and demo project with baseline scenario."""
+    """Idempotently seed default demo organization, users, and baseline feasibility project."""
     from backend.app.models.organization import Organization
     from backend.app.models.user import User
     from backend.app.models.project import Project
@@ -40,12 +54,9 @@ def init_db(db: Session) -> None:
     from backend.app.models.land import LandInput, AcquisitionCostItem
     from backend.app.models.cost import CostItem
     from backend.app.models.sales import SalesProductItem
-    from backend.app.models.funding import FundingAssumption
+    from backend.app.models.funding import FundingAssumption, FundingTranche
     from backend.app.models.schedule import ScheduleMilestone
     from backend.app.core.security import get_password_hash
-
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
 
     # Check if demo organization exists
     demo_org = db.query(Organization).filter(Organization.slug == "apex-developments").first()

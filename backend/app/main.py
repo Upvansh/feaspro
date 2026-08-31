@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 from backend.app.core.config import settings
-from backend.app.core.database import SessionLocal, init_db
+from backend.app.core.database import SessionLocal, init_db, get_db
 from backend.app.api.v1.router import api_router
 
 @asynccontextmanager
@@ -38,9 +40,16 @@ app.add_middleware(
 @app.get("/health", tags=["System"])
 @app.get("/api/health", tags=["System"])
 @app.get("/api/v1/health", tags=["System"])
-def health_check():
+def health_check(db: Session = Depends(get_db)):
+    db_status = "connected"
+    try:
+        db.execute(text("SELECT 1"))
+    except Exception as e:
+        db_status = "disconnected"
+    
     return {
-        "status": "healthy",
+        "status": "healthy" if db_status == "connected" else "degraded",
+        "database": db_status,
         "service": "feaspro-api",
         "version": settings.VERSION
     }

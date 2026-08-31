@@ -6,7 +6,7 @@ from backend.app.models.scenario import Scenario
 from backend.app.models.land import LandInput, AcquisitionCostItem
 from backend.app.models.cost import CostItem
 from backend.app.models.sales import SalesProductItem
-from backend.app.models.funding import FundingAssumption
+from backend.app.models.funding import FundingAssumption, FundingTranche
 from backend.app.models.schedule import ScheduleMilestone
 
 __all__ = [
@@ -21,5 +21,6 @@ __all__ = [
     "CostItem",
     "SalesProductItem",
     "FundingAssumption",
+    "FundingTranche",
     "ScheduleMilestone",
 ]

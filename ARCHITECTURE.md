@@ -44,10 +44,12 @@ This document describes the Phase 1 foundational architecture, multi-tenant secu
                                    ▼
 +-----------------------------------------------------------------------+
 |                               Database                                |
-|        (SQLite for Local Dev/Testing ↔ PostgreSQL in Production)       |
+|         (Supabase-Hosted PostgreSQL via SQLAlchemy 2.0 + psycopg 3)   |
 |                                                                       |
 |  - organizations        - users               - projects              |
-|  - scenarios            - [Future: land_assumptions, cost_items...]   |
+|  - scenarios            - land_inputs         - cost_items            |
+|  - sales_products       - funding_assumptions - funding_tranches      |
+|  - schedule_milestones                                                |
 +-----------------------------------------------------------------------+
 ```
 

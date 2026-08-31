@@ -1,79 +1,101 @@
 # FeasPro - Property Development Feasibility Platform
 
-FeasPro is a specialized property development feasibility and financial modelling platform designed to evaluate financial returns, cash flow, and development assumptions.
+FeasPro is a specialized property development feasibility and financial modelling platform engineered to evaluate financial returns, cash flow, and development assumptions across multi-tenant organizations.
 
 ---
 
-## Quick Start Guide
+## 🗄️ Database Architecture: Supabase PostgreSQL
 
-### Prerequisites
-- Python 3.12+
-- Node.js v18+ / npm
+FeasPro uses **Supabase-hosted PostgreSQL** as its primary cloud database provider, accessed through **SQLAlchemy 2.0** and the **`psycopg` (v3)** driver.
 
----
-
-### 1. Backend Setup & Run
-
-```bash
-# In project root:
-# 1. Activate the virtual environment
-.\venv\Scripts\activate   # Windows
-# source venv/bin/activate  # macOS / Linux
-
-# 2. Run backend server (will automatically create database tables & seed sample project)
-uvicorn backend.app.main:app --reload --port 8000
+```text
+React 18 + TypeScript + Vite
+          ↓ HTTP REST API
+FastAPI (Python 3.12+)
+          ↓ SQLAlchemy 2.0 (psycopg)
+Supabase PostgreSQL
 ```
 
-- Backend API: `http://127.0.0.1:8000`
-- Interactive OpenAPI Docs: `http://127.0.0.1:8000/docs`
-- Health Check: `http://127.0.0.1:8000/health`
+---
+
+## 🚀 Supabase PostgreSQL Setup Guide
+
+### 1. Create a Supabase Project
+1. Log in to [Supabase](https://supabase.com) and click **New Project**.
+2. Set your **Database Password** and select your preferred region.
+3. In **Project Settings** > **Database**, copy your **URI Connection String**.
+
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env` and set your `DATABASE_URL`:
+
+```env
+# Supabase Direct Connection (port 5432)
+DATABASE_URL=postgresql+psycopg://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres
+
+# Or Supabase Transaction Connection Pooler (port 6543)
+DATABASE_URL=postgresql+psycopg://postgres.YOUR_PROJECT_REF:YOUR_PASSWORD@aws-0-region.pooler.supabase.com:6543/postgres
+```
 
 ---
 
-### 2. Frontend Setup & Run
+## 💻 Quick Start Guide (Windows)
 
-```bash
-# In frontend/ directory:
-cd frontend
+### 1. Install Backend Dependencies & Run Migrations
+
+```powershell
+# Activate Python virtual environment
+.\venv\Scripts\activate
+
+# Install Python requirements (including psycopg driver and alembic)
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# Run Alembic schema migrations against Supabase PostgreSQL
+.\venv\Scripts\python.exe -m alembic upgrade head
+```
+
+### 2. (Optional) Migrate Existing Local SQLite Data to PostgreSQL
+
+If you have existing feasibilities in `feaspro.db`, migrate them safely using the migration script:
+
+```powershell
+.\venv\Scripts\python.exe backend/scripts/migrate_sqlite_to_pg.py --sqlite ./feaspro.db
+```
+
+### 3. Start Development Platform (Full Stack)
+
+In the root directory, run both FastAPI and Vite with a single command:
+
+```powershell
 npm run dev
 ```
 
-- Open `http://localhost:5173` in your browser.
+* **Frontend Dashboard**: `http://localhost:5173`
+* **FastAPI Backend**: `http://127.0.0.1:8000`
+* **Interactive API Docs (Swagger UI)**: `http://127.0.0.1:8000/docs`
+* **Database Health Diagnostic**: `http://127.0.0.1:8000/health`
 
 ---
 
-### 3. Running Automated Tests
+## 🧪 Running Automated Tests
 
-```bash
-# Run pytest test suite from project root:
-.\venv\Scripts\pytest.exe -v
+```powershell
+.\venv\Scripts\python.exe -m pytest -v
 ```
 
----
-
-### 4. Running Database Migrations (Alembic)
-
-```bash
-# Apply migrations:
-.\venv\Scripts\alembic.exe upgrade head
-
-# Generate a new migration:
-.\venv\Scripts\alembic.exe revision --autogenerate -m "Migration description"
-```
+All 50 unit and integration tests run with full in-memory isolation.
 
 ---
 
-### 5. Pre-Seeded Demo Project
+## 🔑 Pre-Seeded Accounts
 
-On startup, the system automatically provisions:
-- **Organization**: `Apex Property Group`
-- **User**: `developer@apexdev.com.au`
-- **Sample Project**: `Pacific Horizon Residences` (48-unit apartment development in Burleigh Heads QLD)
-- **Baseline Scenario**: `Baseline Feasibility (48 Units)`
-- **Alternate Scenario**: `Higher Density Scheme (56 Units)`
+* **Developer Account**: `developer@apexdev.com.au` / `FeasPro2026!`
+* **Mahi Account**: `mahi@gmail.com` / `password123`
+* **Admin Account**: `alex@apexproperty.com.au` / `password123`
+* **1-Click Demo**: Click **⚡ 1-Click Demo Sign-In** on the login screen.
 
 ---
 
-## Architecture
+## 🏗️ Architecture & Documentation
 
-See [ARCHITECTURE.md](file:///c:/Users/HP/Desktop/app/ARCHITECTURE.md) for full architectural specifications, domain models, and calculation engine integration guides.
+See [ARCHITECTURE.md](file:///c:/feaspro/ARCHITECTURE.md) for detailed domain models, multi-tenant isolation specifications, and calculation engine guides.
+
