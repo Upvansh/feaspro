@@ -147,26 +147,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
               )}
             </button>
 
-            <button
-              type="button"
-              className="btn btn-secondary"
-              style={{
-                width: '100%',
-                marginTop: '10px',
-                justifyContent: 'center',
-                backgroundColor: '#f8fafc',
-                border: '1px solid #cbd5e1',
-                fontWeight: 600,
-              }}
-              onClick={() => {
-                setEmail('alex@apexproperty.com.au');
-                setPassword('password123');
-                setTimeout(() => handleSubmit(), 50);
-              }}
-              disabled={loading}
-            >
-              <span>⚡ 1-Click Demo Sign-In</span>
-            </button>
           </form>
 
           {onNavigateToRegister && (
