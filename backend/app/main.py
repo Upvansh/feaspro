@@ -42,6 +42,7 @@ app.add_middleware(
 # Root & Health check
 @app.get("/health", tags=["System"])
 @app.get("/api/health", tags=["System"])
+@app.get("/v1/health", tags=["System"])
 @app.get("/api/v1/health", tags=["System"])
 def health_check(db: Session = Depends(get_db)):
     db_status = "connected"
@@ -57,8 +58,10 @@ def health_check(db: Session = Depends(get_db)):
         "version": settings.VERSION
     }
 
-# Mount API v1
+# Mount API v1 under both /api/v1 and /v1 for Vercel routing compatibility
 app.include_router(api_router, prefix=settings.API_V1_STR)
+if settings.API_V1_STR != "/v1":
+    app.include_router(api_router, prefix="/v1")
 
 # Serve Frontend Static Files (Vite SPA)
 import os
