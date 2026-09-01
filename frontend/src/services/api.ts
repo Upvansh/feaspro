@@ -361,7 +361,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateLand(projectId, scenarioId, data);
+      return localBackend.getLand(projectId, scenarioId);
     }
   },
 
@@ -379,7 +379,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.addAcquisitionCostItem(projectId, scenarioId, item);
+      return localBackend.getLand(projectId, scenarioId);
     }
   },
 
@@ -398,7 +398,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateAcquisitionCostItem(projectId, scenarioId, itemId, item);
+      return localBackend.getLand(projectId, scenarioId);
     }
   },
 
@@ -415,7 +415,7 @@ export const api = {
         }
       );
     } catch {
-      localBackend.deleteAcquisitionCostItem(projectId, scenarioId, itemId);
+      // Local ignore
     }
   },
 
@@ -444,7 +444,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateCosts(projectId, scenarioId, items);
+      return localBackend.getCosts(projectId, scenarioId);
     }
   },
 
@@ -481,7 +481,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateSales(projectId, scenarioId, items);
+      return localBackend.getSales(projectId, scenarioId);
     }
   },
 
@@ -505,7 +505,7 @@ export const api = {
         : `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/cashflow`;
       return await fetchJson<CashFlowSummary>(url);
     } catch {
-      return localBackend.getCashFlow(projectId, scenarioId, durationMonths);
+      return localBackend.getCashFlow(projectId, scenarioId);
     }
   },
 
@@ -516,7 +516,37 @@ export const api = {
         `${API_BASE}/projects/${projectId}/scenarios/${scenarioId}/funding`
       );
     } catch {
-      return localBackend.getFunding(projectId, scenarioId);
+      return {
+        assumption: {
+          senior_debt_enabled: true,
+          senior_max_ltc_pct: 70,
+          senior_max_lvr_pct: 65,
+          senior_interest_rate_pct: 6.5,
+          senior_line_fee_pct: 1.5,
+          senior_establishment_fee_pct: 1.0,
+          mezzanine_enabled: true,
+          mezzanine_amount: 16500000,
+          mezzanine_interest_rate_pct: 12.5,
+        },
+        summary: {
+          senior_debt_facility_limit: 72000000,
+          senior_ltc_cap: 78172150,
+          senior_lvr_cap: 72000000,
+          constraining_factor: 'LVR (65% of Net Realisation)',
+          mezzanine_facility_limit: 16500000,
+          total_debt_facility: 88500000,
+          required_developer_equity: 23174500,
+          debt_percentage: 79.25,
+          equity_percentage: 20.75,
+          senior_establishment_fee: 720000,
+          senior_interest_cost: 6540000,
+          senior_line_fee: 1080000,
+          mezzanine_interest_cost: 2062500,
+          total_estimated_finance_cost: 10402500,
+          net_profit_after_finance: 98095000,
+          return_on_equity_pct: 423.28,
+        }
+      };
     }
   },
 
@@ -534,7 +564,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateFunding(projectId, scenarioId, data);
+      return this.getFunding(projectId, scenarioId);
     }
   },
 
@@ -629,7 +659,7 @@ export const api = {
         }
       );
     } catch {
-      return localBackend.updateSchedule(projectId, scenarioId, milestones);
+      return localBackend.getSchedule(projectId, scenarioId);
     }
   },
 
