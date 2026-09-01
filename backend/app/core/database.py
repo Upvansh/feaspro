@@ -7,7 +7,11 @@ from backend.app.core.config import settings
 from backend.app.models.base import Base
 
 # Database engine configuration - compatible with PostgreSQL (Supabase) and SQLite
-db_url = settings.DATABASE_URL
+db_url = str(settings.DATABASE_URL or "").strip().strip("'").strip('"').strip()
+
+# Fallback to local SQLite if empty
+if not db_url:
+    db_url = "sqlite:///./feaspro.db"
 
 # Normalize legacy postgres:// or standard postgresql:// to postgresql+psycopg://
 if db_url.startswith("postgres://"):
@@ -30,11 +34,15 @@ if db_url.startswith("postgresql"):
 elif db_url.startswith("sqlite"):
     connect_args["check_same_thread"] = False
 
-engine = create_engine(
-    db_url,
-    connect_args=connect_args,
-    **engine_kwargs
-)
+try:
+    engine = create_engine(
+        db_url,
+        connect_args=connect_args,
+        **engine_kwargs
+    )
+except Exception as e:
+    print(f"[Database Error] Failed to create primary database engine: {e}. Falling back to SQLite.")
+    engine = create_engine("sqlite:///./feaspro.db", connect_args={"check_same_thread": False})
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

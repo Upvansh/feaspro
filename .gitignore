@@ -107,3 +107,4 @@ desktop.ini
 *.sublime-project
 *.swp
 *.swo
+.vercel

@@ -19,29 +19,29 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/postgres"
     
     # CORS
-    BACKEND_CORS_ORIGINS: List[str] = [
+    BACKEND_CORS_ORIGINS: Any = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://feaspro.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     @classmethod
     def assemble_cors_origins(cls, v: Any) -> List[str]:
         if isinstance(v, str):
-            v_str = v.strip()
+            v_str = v.strip().lstrip("\ufeff").strip()
             if v_str.startswith("[") and v_str.endswith("]"):
                 try:
                     parsed = json.loads(v_str)
                     if isinstance(parsed, list):
-                        return [str(i) for i in parsed]
+                        return [str(i).strip().lstrip("\ufeff").strip() for i in parsed]
                 except Exception:
                     pass
-            # Comma-separated or single string like "*"
-            return [i.strip() for i in v_str.split(",") if i.strip()]
+            return [i.strip().lstrip("\ufeff").strip() for i in v_str.split(",") if i.strip()]
         elif isinstance(v, list):
-            return [str(i) for i in v]
+            return [str(i).strip().lstrip("\ufeff").strip() for i in v]
         return ["*"]
 
     model_config = SettingsConfigDict(
